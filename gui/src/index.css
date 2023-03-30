@@ -1,0 +1,90 @@
+*::after,*::before,* {
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: none;
+  box-sizing: border-box;
+}
+
+:root {
+  --primaryColor:#1DA0A5;
+  --lightGray:#F6F6F6;
+  --gray: #A0A0A0;
+  --darkGreen: #717F7F;
+  --white: #FFFFFF;
+  --darkWhite:#F1F5F4;
+  --black: #000000;
+  --navbarHeight: 100px;
+  --sidenavWidth: 80%;
+  --scanPageTabs: 60px
+}
+
+h1,h2,h3,h4,h5,h6 {
+  text-align: center;
+  font-weight: 100;
+  font-family: 'Inter';
+}
+p, label {
+  font-family: 'Inter';
+  text-align: center;
+}
+
+.app {
+  padding: 10px;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  
+}
+
+button, input[type="submit"] {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  gap: 12px;
+  border: 1px solid var(--primaryColor) ;
+  background: var(--primaryColor);
+  box-shadow: 0px 0px 5px black;
+  border-radius: 1rem;
+  font-size: 16px;
+  color: white;
+  width: 80%;
+}
+
+.btn--flat {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  /* border-bottom: 1px solid var(--gray); */
+  box-shadow: none;
+  color: var(--black);
+  
+}
+
+
+
+.disabled {
+  background-color: var(--gray);
+  pointer-events: none;
+}
+
+input[type="text"], input[type="number"] {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 8px;
+  /* background: #FFFFFF; */
+  border: 1px solid #E3E8EE;
+  box-shadow: 0px 1px 2px rgba(55, 65, 81, 0.08);
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+input:focus {
+  box-shadow: 0px 0px 5px var(--primaryColor);
+}
