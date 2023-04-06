@@ -1,0 +1,9 @@
+﻿channel1 = 0
+channel2 = 0
+pixels = 4096
+wavelength1 = [0.0] * 4096
+wavelength2 = [0.0] * 4096
+spectraldata1 = [500.0] * 4096
+spectraldata2 = [0.0] * 4096
+scan = False
+maxFrames = 100

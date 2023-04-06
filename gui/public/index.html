@@ -11,7 +11,21 @@
     <title>Ligo LIBS</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter">
     <link href = "https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel = "stylesheet">
-    
+    <script type="text/javascript" src="http://localhost:8000/eel.js"></script>
+    <script>
+      const startRoutine = ()=>{
+        console.log("startRoutine")
+        eel.start_routine()
+      }
+      window.addEventListener('startRoutine', startRoutine)
+      console.log(eel)
+      console.log("Websocket", eel._host)
+      // eel.set_host("ws://localhost:8000/")
+      eel.set_host("ws://localhost:8000/eel?page=index.html")
+      console.log(eel)
+      // eel.showModal()
+      
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -26,16 +40,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <script type="text/javascript" src="http://localhost:8888/eel.js"></script>
-    <script>
-      const startRoutine = ()=>{
-        console.log("startRoutine")
-        eel.start_routine()
-      }
-      window.addEventListener('startRoutine', startRoutine)
-      console.log(eel)
-      
-      
-    </script>
+    
   </body>
 </html>

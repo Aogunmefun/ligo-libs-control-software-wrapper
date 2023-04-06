@@ -53,6 +53,19 @@ button, input[type="submit"] {
   font-size: 16px;
   color: white;
   width: 80%;
+  transition: all 0.2s;
+}
+
+button:hover {
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: var(--darkGreen);
+  border: 1px solid var(--darkGreen);
+}
+
+input[type="submit"]:hover {
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .btn--flat {
@@ -70,6 +83,7 @@ button, input[type="submit"] {
 .disabled {
   background-color: var(--gray);
   pointer-events: none;
+  border-color: var(--gray);
 }
 
 input[type="text"], input[type="number"] {
@@ -88,3 +102,4 @@ input[type="text"], input[type="number"] {
 input:focus {
   box-shadow: 0px 0px 5px var(--primaryColor);
 }
+
