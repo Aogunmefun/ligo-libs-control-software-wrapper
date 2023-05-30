@@ -55,13 +55,14 @@ function Measurement(props) {
     const startRoutine = ()=>{
         setBusy(true)
         // console.log("busy", busy)
-        if(!uvExposure||!visibleExposure||!msmName) {
+        if(!uvExposure||!visibleExposure||!msmName||!frames) {
             setModal({state:true, text:"Please make sure all configuration fields are filled in"})
             setBusy(false)
             return
         }
         // if(!.spectrometer||!props.connected.laser||!props.connected.laser)
-        app.eel.beginRoutine(msmName, uvExposure, visibleExposure, period)((res)=>setBusy(false))
+        console.log("uvexposure", uvExposure, "period", period)
+        app.eel.beginRoutine(msmName, parseInt(uvExposure), parseInt(visibleExposure), parseInt(period), parseInt(frames))((res)=>setBusy(false))
         
         // setBusy(false)
     }
@@ -70,7 +71,7 @@ function Measurement(props) {
         <div className="measurement">
             <Modal close={true} modal={modal} setModal={setModal} />
             {   
-                !props.connected.spectrometer||!props.connected.pdg||!props.connected.robot?
+                !props.connected.spectrometer||!props.connected.pdg?
                 <p>Make sure all devices are connected</p>
                 :<button onClick={startRoutine} className={`${busy?"disabled":""}`}>Run</button>
             }
@@ -105,7 +106,7 @@ function Measurement(props) {
 
                 </form>
                 
-                <button>Confirm Parameters</button>
+               
             </div>
         </div>
     )

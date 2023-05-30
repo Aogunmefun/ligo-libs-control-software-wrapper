@@ -1,0 +1,12 @@
+
+
+.camera {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.5rem;
+}
+
+.camera > video {
+    border-radius: 2rem;
+}

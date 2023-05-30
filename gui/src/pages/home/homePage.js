@@ -4,6 +4,11 @@ import Laser from "../../components/laser/laser";
 // import { eel } from "../../eel.js"
 import Measurement from "../../components/measurement/measurement";
 import Connect from "../../components/connect/connect";
+import Graph from "../../components/graph/graph";
+import Camera from "../../components/camera/camera";
+import SampleMap from "../../components/sampleMap/sampleMap";
+import { Context } from "../../app";
+
 
 function HomePage() {
 
@@ -13,6 +18,7 @@ function HomePage() {
         laser: false,
         robot:false
     })
+    const app = useContext(Context)
 
     useEffect(()=>{
         // const script = document.createElement('script');
@@ -40,7 +46,18 @@ function HomePage() {
             {/* <button onClick={()=>eel.showModal()}>Run</button> */}
             
             <Connect connected={connected} setConnected={setConnected} />
-            <Measurement connected={connected} />
+
+            <div className="measurementInfo">
+                <Measurement connected={connected} />
+                {/* <Camera /> */}
+                <SampleMap />
+            </div>
+            <button onClick={()=>{
+
+                app.setGrid(Array(720).fill(0))
+                app.setIndex(0)
+            }}>Clear</button>
+            
 
             <Laser />
             

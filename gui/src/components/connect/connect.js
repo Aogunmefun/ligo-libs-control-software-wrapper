@@ -68,9 +68,11 @@ function Connect(props) {
 
     const connectLaser = (val) =>{
         setBusy(false)
-        props.setConnected({
-            ...props.connected,
-            laser:  val
+        app.eel.connectLaser()(()=>{
+            props.setConnected({
+                ...props.connected,
+                laser:  !props.connected.laser
+            })
         })
     }
 
