@@ -31,9 +31,11 @@ def positionRobot(samplePos):
         elif data == b'3':
             break
 
-while True:
-    tray = input("Enter Tray position: ")
-    tray = tray.split(",")
-    tray = [float(i) for i in tray]
-    positionRobot(tray)
-# positionRobot(globals.tower1[0,:])
+# while True:
+#     tray = input("Enter Tray position: ")
+#     tray = tray.split(",")
+#     tray = [float(i) for i in tray]
+#     positionRobot(tray)
+# for i in range(globals.tower1.shape[0]):
+#     positionRobot(globals.tower1[i,:])
+positionRobot(globals.tower1[2,:])
