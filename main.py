@@ -14,6 +14,7 @@ import ctypes
 import cv2
 import numpy as np
 from predict import *
+from robotCommands import *
 import csv
 
 host = "127.0.0.1"
@@ -22,7 +23,7 @@ port = 3000
 ser = serial.Serial()
 
 
-robot = socket.socket() 
+
 iris = socket.socket()
 test = socket.socket()
       
@@ -156,7 +157,7 @@ def newData2():
     else:
         globals.spectra = np.concatenate((globals.spectra, y[np.newaxis]), axis=0)
 
-    eel.map(predict(x, y))
+    # eel.map(predict(x, y))
 
     # print(x[5000:5005], y[5000:5005])
     # print("Channel 1", x[0], y[0])
@@ -169,9 +170,13 @@ def newData2():
     # figure.canvas.flush_events()
     
 
-def startRoutine(name, speed, distance):
+def startRoutine(tray, sample):
     globals.scan = True
     robotStopped = False
+    
+    
+    readyScanPosition()
+    startScanMovement(sample,1)
     
     sleep(2)
     print(ser.read(100))
@@ -218,10 +223,12 @@ def startRoutine(name, speed, distance):
             print(ser.read(100))
             print(globals.spectra.shape)
             print(globals.wavelengths.shape)
-            with open(globals.fileName+".csv","w+", newline='') as my_csv:
-                csvWriter = csv.writer(my_csv,delimiter=',')
-                csvWriter.writerow(globals.wavelengths)
-                csvWriter.writerows(globals.spectra)
+            stopScanMovement()
+            
+            # with open(globals.fileName+".csv","w+", newline='') as my_csv:
+            #     csvWriter = csv.writer(my_csv,delimiter=',')
+            #     csvWriter.writerow(globals.wavelengths)
+            #     csvWriter.writerows(globals.spectra)
         
         # if dataready == True:
         #     globals.scans = globals.scans + 1
@@ -308,10 +315,10 @@ def connectPDG(val):
 def connectRobot(val):
     print("here")
     if val:
-        robot.connect((robot_ip, robot_port))
+        globals.robot.connect((robot_ip, robot_port))
         return True
     else:
-        robot.close()
+        globals.robot.close()
         return True
 
 @eel.expose
@@ -321,16 +328,17 @@ def showModal():
     return
 
 @eel.expose
-def beginRoutine(name="my measurement", uvExposure = 8000, visibleExposure = 1000, period = 50000, maxFrames = 50):
-    print("exposure", float(uvExposure/1000))
-    print("exposure", float(visibleExposure/1000))
+# def beginRoutine(name="my measurement", uvExposure = 7000, visibleExposure = 500, period = 50000, maxFrames = 50, tray=0, sample=1):
+def beginRoutine(tray=0, sample=1):
+    # print("exposure", float(uvExposure/1000))
+    # print("exposure", float(visibleExposure/1000))
     # globals.uvExposure = uvExposure
     # positionRobot()
     startSpectrometer("my measurement")
-    globals.measconfig1.m_IntegrationTime = float(uvExposure/1000)
-    globals.measconfig2.m_IntegrationTime = float(visibleExposure/1000)
-    globals.maxFrames = int(maxFrames)
-    globals.fileName = name
+    globals.measconfig1.m_IntegrationTime = float(7000/1000)
+    globals.measconfig2.m_IntegrationTime = float(500/1000)
+    globals.maxFrames = int("50")
+    globals.fileName = "name"
     # periodstr = ":PULSE0:PERIOD " + str(period/1000000) + "\r\n"
     # ser.write(bytes(periodstr, encoding="ascii"))
     # # ser.write(b':PULSE[0]:PERIOD 0.05\r\n')
@@ -339,8 +347,16 @@ def beginRoutine(name="my measurement", uvExposure = 8000, visibleExposure = 100
     ret = AVS_PrepareMeasure(globals.channel1, globals.measconfig1)
     ret = AVS_PrepareMeasure(globals.channel2, globals.measconfig2)
     print("Spectrometer Ready")
-    startRoutine(name = name, speed = 3, distance = 85)
-
+    for row in range(globals.tower1.shape[0]):
+        tower1()
+        setPosition(globals.tower1[row,:])
+        grabSample()
+        tower1(True)
+        for comp in range(5):
+            startRoutine(row+1, comp+1)
+        readyScanPosition()
+        tower1()
+        returnTray()
 @eel.expose
 def getFrame():
     vid = cv2.VideoCapture(1)

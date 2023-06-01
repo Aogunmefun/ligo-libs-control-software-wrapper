@@ -48,18 +48,21 @@ function HomePage() {
             <Connect connected={connected} setConnected={setConnected} />
 
             <div className="measurementInfo">
-                <Measurement connected={connected} />
+                {/* <Measurement connected={connected} /> */}
                 {/* <Camera /> */}
-                <SampleMap />
+                {/* <SampleMap /> */}
+                <button onClick={()=>app.eel.beginRoutine(1,2)}>1</button>
+                <button onClick={()=>app.eel.beginRoutine(7,2)}>7</button>
             </div>
-            <button onClick={()=>{
+            {/* <button onClick={()=>{
 
                 app.setGrid(Array(720).fill(0))
                 app.setIndex(0)
-            }}>Clear</button>
+            }}>Clear</button> */}
             
 
-            <Laser />
+            {/* <Laser /> */}
+
             
         </div>
     )
