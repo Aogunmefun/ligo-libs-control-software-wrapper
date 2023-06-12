@@ -5,6 +5,7 @@ import time
 import serial
 import winsound
 import globals
+import csv
 
 
 robot = globals.robot
@@ -109,6 +110,24 @@ def readyScanPosition():
             print("Ready to scan")
             done = True
 
+
+def positionSample(pos):
+    robot.sendall(bytes(str(11), encoding="ascii"))
+    moved = False
+    while not moved:
+        data = robot.recv(1)
+        if data == b'0':
+            robot.sendall(bytes(str(90-((5-pos)*38)), encoding="ascii"))
+            print("Mode Received")
+        elif data == b'1':
+            robot.sendall(bytes(str(0), encoding="ascii"))
+            print("Recived horizontal offset")
+        elif data == b'2':
+            print("Recived vertical offset")
+        elif data == b'3':
+            print("Gone to Position")
+            moved = True
+
 def startScanMovement(pos, passes):
     robot.sendall(bytes(str(8), encoding="ascii"))
     done = False
@@ -136,6 +155,75 @@ def stopScanMovement():
             print("scan Stopped")
             stopped = True
             # robot.sendall(bytes(str(8), encoding="ascii"))
+
+def lockPiston():
+    robot.sendall(bytes(str(6), encoding="ascii"))
+    locked = False
+    while not locked:
+        data = robot.recv(1)
+        if data == b'0':
+            print("scan Stopped")
+            locked = True
+
+def openPiston():
+    robot.sendall(bytes(str(7), encoding="ascii"))
+    open = False
+    while not open:
+        data = robot.recv(1)
+        if data == b'0':
+            print("scan Stopped")
+            open = True
+
+def startMap():
+    robot.sendall(bytes(str(10), encoding="ascii"))
+    res = False
+    while not res:
+        data = robot.recv(1)
+        if data == b'0':
+            print("Mapping Mode Selected")
+            res = True
+
+def offRight():
+    robot.sendall(bytes(str(4), encoding="ascii"))
+    res = False
+    while not res:
+        data = robot.recv(1)
+        if data == b'0':
+            print("Moved Right")
+            res = True
+
+def offReturn():
+    robot.sendall(bytes(str(2), encoding="ascii"))
+    res = False
+    while not res:
+        data = robot.recv(1)
+        if data == b'0':
+            print("Return to start")
+            res = True
+
+def offDown():
+    robot.sendall(bytes(str(3), encoding="ascii"))
+    res = False
+    while not res:
+        data = robot.recv(1)
+        if data == b'0':
+            print("Moved Down")
+            res = True
+
+def stopMap():
+    robot.sendall(bytes(str(1), encoding="ascii"))
+    res = False
+    while not res:
+        data = robot.recv(1)
+        if data == b'0':
+            print("Stopped Map")
+            res = True
+# globals.fileName = globals.names[0][0]
+
+# with open("F:/LIBS/results"+str(globals.fileName)+".csv","w+", newline='') as my_csv:
+#     csvWriter = csv.writer(my_csv,delimiter=',')
+#     csvWriter.writerow(globals.wavelengths)
+#     csvWriter.writerows(globals.spectra)
 
 # def setMode(mode):
 #     robot.sendall(bytes(str(mode), encoding="ascii"))

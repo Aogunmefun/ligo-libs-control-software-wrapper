@@ -6,7 +6,11 @@
     flex-direction: column;
     align-items: center;
     padding-top: 50px;
-    gap: 50px;
+    gap: 30px;
+}
+
+.homePage > button, .traySelection > button {
+    width: 200px;
 }
 
 .homePage > button:hover {
@@ -19,5 +23,124 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    gap: 20px;
+}
+
+.measurementInfo > i {
+    transition: all 0.2s;
+}
+
+.measurementInfo > i:hover {
+    cursor: pointer;
+    color: var(--gray);
+}
+
+.sampleLoader {
+    width: 800px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    border: 2px solid var(--gray);
+    border-radius: 1rem;
+    /* flex-wrap: wrap; */
+    padding: 20px;
     gap: 50px;
+    overflow-y: scroll;
+    /* overflow: visible; */
+}
+
+.traySelection {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.selectTrays {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+}
+
+.trayOption {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--primaryColor);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+}
+
+.trayOption:hover {
+    cursor: pointer;
+    background-color: var(--gray);
+}
+
+.traySelected {
+    background-color: var(--primaryColor);
+}
+
+.robotCommands {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    left: 20px;
+    top: 400px;
+    gap: 20px;
+    height: 300px;
+}
+
+.robotCommands > h2 {
+    border-bottom: 1px solid black;
+}
+
+.robotCommands > button {
+    color: var(--primaryColor);
+
+}
+
+.robotCommands > button:hover {
+    color: white;
+    border: none;
+}
+
+.stop {
+    background-color: rgb(132, 0, 0);
+    color: white!important;
+    border-radius: 1rem;
+    transition: all 0.2s;
+}
+
+.filePicker {
+    position: absolute;
+    right: 50px;
+    top: 300px;
+}
+
+.runMode {
+    position: absolute;
+    right: 200px;
+    top: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.runMode > select {
+    border: 1px solid black;
+    padding: 10px;
+    border-radius: 0.5rem;
+}
+
+.mappingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }

@@ -3,6 +3,9 @@ import h5py as h5
 import matplotlib.pyplot as plt
 import os
 import csv
+import json
+
+predictions = []
 
 def predict(wavelength, intensity):
     labels = []
@@ -99,6 +102,17 @@ def predict(wavelength, intensity):
     return value
 
 
+values = []
+with open("middleSample.csv", 'r', newline="") as csvfile:
+    reader = csv.reader(csvfile, delimiter=",")
+    for row in reader:
+        values.append([float(i) for i in row])
+
+for spectra in values[1:]:
+    predictions.append(predict(np.array(values[0][:]), np.array(spectra)))
+
+with open("predict.json", 'w') as output:
+    json.dump(predictions, output)
 
 # with h5.File("10501676150_23.5cm.001.h5") as f:
 #     wavelength = np.array(f['wavelength'][...])

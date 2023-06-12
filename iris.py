@@ -7,7 +7,7 @@ import winsound
 
 host = "127.0.0.1"
 port = 3000
-ser = serial.Serial('COM14', 115200, timeout=0, parity=serial.PARITY_EVEN, rtscts=1)
+ser = serial.Serial('COM9', 115200, timeout=0, parity=serial.PARITY_EVEN, rtscts=1)
 
 robot = socket.socket() 
 iris = socket.socket()
@@ -153,14 +153,14 @@ z = 23.5
 #     print(a)
 #     startRoutine(name = "19003314550_Tray3_exposureUV_"+str(uVExposure)+"_exposureVisible_"+str(visibleExposure)+"_"+str(a)+"cm", distance = -((a-20)*10), offset = -10)
 
-startRoutine(name = "10501676150"+"_"+str(z)+"cm", distance = -((z-20)*10), offset = 90)
+startRoutine(name = "17001284", distance = -((z-20)*10), offset = 90)
 sleep(2)
-startRoutine(name = "18502158550"+"_"+str(z)+"cm", distance = -((z-20)*10), offset = 52)
+startRoutine(name = "17001335", distance = -((z-20)*10), offset = 52)
 sleep(2)
-startRoutine(name = "19003630550"+"_"+str(z)+"cm", distance = -((z-20)*10), offset = 14)
+startRoutine(name = "17001282"+"_"+str(z)+"cm", distance = -((z-20)*10), offset = 14)
 # startRoutine(name = "18502158550_Tray3", speed = 3, distance = -140)
-sleep(2)
-startRoutine(name = "10501789150"+"_"+str(z)+"cm", distance = -((z-20)*10), offset = -24)
+# sleep(2)
+# startRoutine(name = "10501789150"+"_"+str(z)+"cm", distance = -((z-20)*10), offset = -24)
 
 # for i in range(1,21):
 #     startRoutine(name = "18502084550_Tray1_"+str(20+i)+"cm", distance = -10*i, offset = -75)

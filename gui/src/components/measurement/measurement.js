@@ -71,7 +71,7 @@ function Measurement(props) {
         <div className="measurement">
             <Modal close={true} modal={modal} setModal={setModal} />
             {   
-                !props.connected.spectrometer||!props.connected.pdg?
+                !props.connected.pdg?
                 <p>Make sure all devices are connected</p>
                 :<button onClick={startRoutine} className={`${busy?"disabled":""}`}>Run</button>
             }

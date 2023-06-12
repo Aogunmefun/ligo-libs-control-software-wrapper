@@ -1,14 +1,17 @@
 
 .sampleMap {
-
+  /* width: 500px; */
+  overflow: hidden;
+  position: absolute;
+  height: fit-content;
 }
 
-.holder {
+.holder-SampleMap {
     display: grid;
     grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto;
-    background-color: rgb(18, 18, 18);
+    /* background-color: rgb(18, 18, 18); */
     padding: 15px;
-    border: 2px solid black;
+    /* border: 2px solid black; */
     padding-left: 20px;
     padding-right: 20px;
     border-radius: 0.5rem;
@@ -16,13 +19,15 @@
 
 .frame {
     /* background-color: rgba(255, 0, 0, 0.2); */
-    background-color: rgb(255, 255, 255);
+    /* background-color: rgb(255, 255, 255); */
+    background-color: transparent;
   border: 0.5px solid rgba(0, 0, 0, 0.8);
-  padding: 5px;
+  padding: 6px;
   font-size: 5px;
   text-align: center;
-  border-radius: 0.2rem;
+  border-radius: 0.1rem;
   transition: all 0.2s;
+  height: 5px;
 }
 
 .frame:hover {
