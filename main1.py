@@ -13,8 +13,9 @@ from array import *
 import ctypes
 import cv2
 import numpy as np
-# from predict import *
+from predict import *
 from robotCommands import *
+from analyze import *
 import csv
 
 host = "127.0.0.1"
@@ -23,8 +24,6 @@ port = 3000
 ser = serial.Serial()
 
 
-
-iris = socket.socket()
 test = socket.socket()
       
 # print ("Socket successfully created")
@@ -59,12 +58,11 @@ def positionRobot(samplePos):
     print(samplePos[1])
     # robot.sendall(bytes(str(samplePos[0,0]), encoding="ascii"))
 
-def startSpectrometer(name):
-    
+def startSpectrometer():
+    ret = AVS_UseHighResAdc(globals.channel1, True)
     globals.measconfig1 = MeasConfigType()
     globals.measconfig1.m_StartPixel = 0
-    # globals.measconfig1.m_StopPixel = globals.pixels1 - 1
-    globals.measconfig1.m_StopPixel = 2047
+    globals.measconfig1.m_StopPixel = globals.pixels1 - 1
     globals.measconfig1.m_IntegrationTime = float(2)
     globals.measconfig1.m_IntegrationDelay = 0
     globals.measconfig1.m_NrAverages = int(1)
@@ -79,13 +77,12 @@ def startSpectrometer(name):
     globals.measconfig1.m_Control_m_StrobeControl = 0
     globals.measconfig1.m_Control_m_LaserDelay = 0
     globals.measconfig1.m_Control_m_LaserWidth = 0
-    globals.measconfig1.m_Control_m_LaserWaveLength = 0.0
+    globals.measconfig1.m_Control_m_LaserWaveLength = 785.0
     globals.measconfig1.m_Control_m_StoreToRam = 0
 
     globals.measconfig2 = MeasConfigType()
     globals.measconfig2.m_StartPixel = 0
-    # globals.measconfig2.m_StopPixel = globals.pixels1 - 1
-    globals.measconfig2.m_StopPixel = 2047
+    globals.measconfig2.m_StopPixel = globals.pixels1 - 1
     globals.measconfig2.m_IntegrationTime = float(5)
     globals.measconfig2.m_IntegrationDelay = 0
     globals.measconfig2.m_NrAverages = int(1)
@@ -100,15 +97,37 @@ def startSpectrometer(name):
     globals.measconfig2.m_Control_m_StrobeControl = 0
     globals.measconfig2.m_Control_m_LaserDelay = 0
     globals.measconfig2.m_Control_m_LaserWidth = 0
-    globals.measconfig2.m_Control_m_LaserWaveLength = 0.0
+    globals.measconfig2.m_Control_m_LaserWaveLength = 785.0
     globals.measconfig2.m_Control_m_StoreToRam = 0
 
 
-    AVS_SetSyncMode(globals.channel1, 1)
+#     AVS_SetSyncMode(globals.channel1, 1)
 
 
     
-    nummeas = globals.maxFrames
+#     nummeas = globals.maxFrames
+
+# def startSpectrometer():
+#     # s.sendall(b'set_msm_name: my measurement\n')
+#     globals.iris.sendall(bytes('set_msm_name: ' + globals.fileName + '\n', encoding="ascii"))
+#     data = globals.iris.recv(1024)
+#     # print('Recieved', data)
+#     sleep(2)
+#     globals.iris.sendall(b'get_msm_state\n')
+#     data = globals.iris.recv(1024)
+#     # print('Received', data)
+#     sleep(2)
+#     globals.iris.sendall(b'prepare_msm\n')
+#     data = globals.iris.recv(1024)
+#     # print('Received', data)
+#     sleep(2)
+#     globals.iris.sendall(b'get_msm_state\n')
+#     data = globals.iris.recv(1024)
+#     # print('Received', data)
+#     sleep(2)
+#     globals.iris.sendall(b'resume_msm\n')
+#     data = globals.iris.recv(1024)
+#     # print('Received', data)
 
 
 # print("here")
@@ -155,7 +174,7 @@ def newData2():
     y = y[np.newaxis]
     if globals.scans == 1:
         # globals.spectra = y[np.newaxis]
-        print("Yshape", y.shape)
+        # print("shape", globals.spectra.shape)
         globals.wavelengths = x
         # with open("F:/LIBS/fitting3/"+globals.fileName+".csv","a", newline='') as my_csv:
         #     csvWriter = csv.writer(my_csv,delimiter=',')
@@ -169,10 +188,9 @@ def newData2():
             )
             f.create_dataset(
                 name="intensity",
-                maxshape=(None, y.shape[1]),
-                shape=(0,y.shape[1])
+                maxshape=(None, 800),
+                shape=(0,800)
             )
-            print("intnesityShape", f["intensity"].shape)
             f["intensity"].resize((f["intensity"].shape[0] + y.shape[0]), axis = 0)
             f["intensity"][f["intensity"].shape[0]-1:] = y
 
@@ -180,6 +198,7 @@ def newData2():
         with h5.File("testing/"+globals.fileName+".h5", "a") as f:
             f["intensity"].resize((f["intensity"].shape[0] + y.shape[0]), axis = 0)
             f["intensity"][f["intensity"].shape[0]-1:] = y
+        # globals.spectra = np.concatenate((globals.spectra, y[np.newaxis]), axis=0)
 
     # eel.map(predict(x, y))
 
@@ -192,18 +211,49 @@ def newData2():
     # line1.set_ydata(y)
     # figure.canvas.draw()
     # figure.canvas.flush_events()
-    
+
+def irisRoutine(tray,sample, name):
+    globals.scan = True
+    robotStopped = False
+
+    globals.fileName = str(name)
+    print("filename", globals.fileName)
+    startSpectrometer()
+    readyScanPosition()
+    startScanMovement(sample,1)
+    print(ser.read(100))
+    print("PDG triggered")
+    print("Scan Started**************************************")
+    sleep(2)
+    ser.write(b':PULSE0:STATE ON\r\n')
+
+    data = globals.robot.recv(1)
+    if data == b'1':
+        ser.write(b':PULSE0:STATE OFF\r\n')
+        print(ser.read(100))
+        print("Scan Finished, Sample placed back")
+        globals.iris.sendall(b'pause_msm\n')
+        data = globals.iris.recv(1024)
+        # print('Received', data)
+        print("Measurement Stopped")
+        analysis = analyze(globals.fileName)
+        if analysis:
+            eel.graph(analysis)
+        else:
+            eel.showModal("Analysis Failed")
 
 def startRoutine(tray, sample, name):
     globals.scan = True
     robotStopped = False
+    
     globals.fileName = str(name)
+    print("filename", globals.fileName)
     
     readyScanPosition()
     startScanMovement(sample,1)
     
     sleep(2)
-    print(ser.read(100))
+    # print(ser.read(100))
     print("PDG triggered")
     print("Scan Started**************************************")
     globals.spectra = np.zeros((globals.maxFrames, 8192))
@@ -226,7 +276,7 @@ def startRoutine(tray, sample, name):
             newData1()
             # newData2()
         while (dataready2 == False):
-            # print("no data")
+            print("no data")
             dataready2 = (AVS_PollScan(globals.channel2) == True)
             time.sleep(0.001)
         if dataready2 == True:
@@ -242,6 +292,8 @@ def startRoutine(tray, sample, name):
             ser.write(b':PULSE0:STATE OFF\r\n')
             AVS_StopMeasure(globals.channel1)
             AVS_StopMeasure(globals.channel2)
+            # globals.iris.sendall(b'pause_msm\n')
+            data = globals.iris.recv(1024)
             print("Measurement Stopped")
             sleep(2)
             print(ser.read(100))
@@ -249,10 +301,9 @@ def startRoutine(tray, sample, name):
             print(globals.wavelengths.shape)
             stopScanMovement()
             
-            # with open(globals.fileName+".csv","w+", newline='') as my_csv:
-            #     csvWriter = csv.writer(my_csv,delimiter=',')
-            #     csvWriter.writerow(globals.wavelengths)
-            #     csvWriter.writerows(globals.spectra)
+
+            # convertFile("F:/LIBS/results/"+globals.fileName)
+            
         
         # if dataready == True:
         #     globals.scans = globals.scans + 1
@@ -277,9 +328,10 @@ def connectLaser():
 def connectSpectrometer(val):
     # iris = socket.socket()
     # if (val):
-    #     iris.connect(('127.0.0.1', 5555))
+    #     globals.iris.connect(('127.0.0.1', 5555))
+    #     return True
     # else:
-    #     iris.close()
+    #     globals.iris.close()
     if (val):
         if (AVS_Init(0) < 2):
             return False
@@ -291,8 +343,6 @@ def connectSpectrometer(val):
             deviceNumbers = str(mylist[0].SerialNumber.decode("utf-8")) + " & " + str(mylist[1].SerialNumber.decode("utf-8"))
             globals.channel1 = AVS_Activate(mylist[0])
             globals.channel2 = AVS_Activate(mylist[1])
-            ret = AVS_UseHighResAdc(globals.channel1, True)
-            ret = AVS_UseHighResAdc(globals.channel2, True)
             devcon1 = DeviceConfigType()
             devcon2 = DeviceConfigType()
             devcon1 = AVS_GetParameter(globals.channel1, 63484)
@@ -355,54 +405,23 @@ def showModal():
 
 @eel.expose
 # def beginRoutine(name="my measurement", uvExposure = 7000, visibleExposure = 500, period = 50000, maxFrames = 50, tray=0, sample=1):
-def beginRoutine():
+def beginRoutine(tray=0, sample=1, name="my measurement"):
     # print("exposure", float(uvExposure/1000))
     # print("exposure", float(visibleExposure/1000))
     # globals.uvExposure = uvExposure
     # positionRobot()
-    startSpectrometer("my measurement")
+    
+    startSpectrometer()
     globals.measconfig1.m_IntegrationTime = float(7000/1000)
     globals.measconfig2.m_IntegrationTime = float(500/1000)
-    globals.maxFrames = int("5000")
+    globals.maxFrames = int("100")
+    globals.fileName = name
     
-    # periodstr = ":PULSE0:PERIOD " + str(period/1000000) + "\r\n"
-    # ser.write(bytes(periodstr, encoding="ascii"))
-    # # ser.write(b':PULSE[0]:PERIOD 0.05\r\n')
-    # sleep(2)
-    # print("period response", ser.read(100))
+
     ret = AVS_PrepareMeasure(globals.channel1, globals.measconfig1)
     ret = AVS_PrepareMeasure(globals.channel2, globals.measconfig2)
     print("Spectrometer Ready")
-    # for row in range(1):
-    #     tower1()
-    #     setPosition(globals.tower1[row,:])
-    #     grabSample()
-    #     tower1(True)
-    #     for comp in range(5):
-    #         startRoutine(row+1, comp+1)
-    #     readyScanPosition()
-    #     tower1()
-    #     returnTray()
-@eel.expose
-def getFrame():
-    vid = cv2.VideoCapture(1)
-    res, frame = vid.read()
-
-    if res:
-        cv2.imwrite("gui/src/frame.png", frame)
-        return True
-    else:
-        return False
     
-@eel.expose
-def plot(ind):
-    print("graph", ind)
-    plt.plot(globals.wavelengths, globals.spectra[ind, :])
-    plt.show()
-
-@eel.expose
-def moveRobot(ind):
-    positionRobot(globals.tower1[ind,:])
 
 
 @eel.expose
@@ -438,9 +457,74 @@ def runSelected(indexes):
         tower1()
         returnTray()
 
-print("new main")
+
+@eel.expose
+def getFrame():
+    vid = cv2.VideoCapture(1)
+    res, frame = vid.read()
+
+    if res:
+        cv2.imwrite("gui/src/frame.png", frame)
+        return True
+    else:
+        return False
+    
+@eel.expose
+def plot(ind):
+    print("graph", ind)
+    plt.plot(np.array(globals.spectra)[0,:], np.array(globals.spectra)[ind+1, :])
+    plt.show()
+
+@eel.expose
+def moveRobot(ind):
+    positionRobot(globals.tower1[ind,:])
+
+@eel.expose
+def moveTower1():
+    tower1()
+
+@eel.expose
+def gotoScanPosition():
+    readyScanPosition()
+
+@eel.expose
+def lock():
+    lockPiston()
+
+@eel.expose
+def release():
+    openPiston()
+
+
+@eel.expose
+def stop():
+    stopScanMovement()
+    ser.write(b':PULSE0:STATE OFF\r\n')
+    AVS_StopMeasure(globals.channel1)
+    AVS_StopMeasure(globals.channel2)
+
+@eel.expose
+def statisticalMap():
+    readyScanPosition()
+    positionSample(5)
+    offReturn()
+    startMap()
+    sleep(2)
+    for i in range(30):
+        for j in range(24):
+            offRight()
+        offDown()
+        offReturn()
 
 # eel.browsers.set_path('electron', 'gui/node_modules/electron/dist/electron')
+
+with open("middleSample.csv", 'r', newline="") as csvfile:
+    reader = csv.reader(csvfile, delimiter=",")
+    for row in reader:
+        globals.spectra.append([float(i) for i in row])
+
+
+
 eel.init("gui/src", ['.tsx', '.ts', '.jsx', '.js', '.html'])
 
 

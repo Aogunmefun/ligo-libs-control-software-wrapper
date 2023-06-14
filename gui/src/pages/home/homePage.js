@@ -213,7 +213,7 @@ function HomePage() {
                     <option value="mapping">Mapping</option>
                 </select>
             </div>
-            <button onClick={()=>app.eel.statisticalMap()}>Start Mapping</button>
+            <button onClick={()=>app.eel.beginRoutine()}>Start Mapping</button>
 
             {/* <button onClick={()=>{
 
